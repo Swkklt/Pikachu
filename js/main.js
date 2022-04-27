@@ -1,21 +1,53 @@
 !function(){
+    var duration = 50 //  打一个字符的时间间隔
+    $('.actions').on('click','button',function(e){
+        let $button = $(e.currentTarget) //  button
+        let speed = $button.attr('data-speed') // 获得点击按钮的data-speed的值
+        console.log(speed)
+        $button.addClass('active').siblings('.active').removeClass('active') // 点击按钮添加active类，其他兄弟按钮去除active类
+        switch(speed){
+            case 'slow':
+                duration = 100
+                break
+            case 'normal':
+                duration = 50
+                break
+            case 'fast':
+                duration = 10
+                break
+        }
+    })
     function writeCode(prefix,code,fn){
         let container = document.querySelector('#code')
         let styleTag = document.querySelector('#styleTag')
         let n = 0
-        let id = setInterval(
-            ()=>{
+        setTimeout(
+            function run(){
                 n += 1
                 container.innerHTML = code.substring(0,n)
                 styleTag.innerHTML = code.substring(0,n)
                 container.scrollTop = container.scrollHeight
-                if(n>code.length){
-                    window.clearInterval(id)
-                    fn && fn.call()  // 如果传的是回调，那么久就调用一下回调
+                if(n < code.length){
+                    setTimeout(run,duration)  // 每运行一次。都会给duration(打一个字符的时间间隔)重新赋值
+                }else{
+                    fn && fn.call()
                 }
             },
-            20
+            duration  // 此处不能用变量，因为只读一次，之后不会再读这个值，所以用变量改值也没用
         )
+        // let id = setInterval(
+        //     ()=>{
+        //         n += 1
+        //         container.innerHTML = code.substring(0,n)
+        //         styleTag.innerHTML = code.substring(0,n)
+        //         container.scrollTop = container.scrollHeight
+        //         if(n>code.length){
+        //             window.clearInterval(id)
+        //             fn && fn.call()  // 如果传的是回调，那么久就调用一下回调
+        //         }
+        //     },
+        //     20  // 此处不能用变量，因为只读一次，之后不会再读这个值，所以用变量改值也没用
+        // )
     }
     let code = `
 /*
@@ -184,4 +216,5 @@
  */
 `
     writeCode('',code)
+    
 }.call()
